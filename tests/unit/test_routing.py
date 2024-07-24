@@ -11,14 +11,13 @@ from millenium_falcon.util.routing import (
 )
 
 
-routes = [
-    # From `universe.db`
+_ROUTES = [
     Route("Tatooine", "Dagobah", 6),
     Route("Dagobah", "Endor", 4),
     Route("Dagobah", "Hoth", 1),
     Route("Hoth", "Endor", 1),
     Route("Tatooine", "Hoth", 6),
-    # Some additional routes, just for fun
+    # Some additional routes:
     Route("Coruscant", "Alderaan", 4),
     Route("Tatooine", "Naboo", 3),
     Route("Naboo", "Bespin", 2),
@@ -49,8 +48,15 @@ routes = [
     Route("Bespin", "Alderaan", 3),
     Route("Alderaan", "Kamino", 4),
     Route("Kamino", "Coruscant", 3),
-    Route("Dantooine", "Geonosis", 5),  # Note: no route leads to Dantooine
+    Route("Dantooine", "Geonosis", 5),
 ]
+
+
+def get_all_routes():
+    # Routes are bidirectional
+    return _ROUTES + [
+        Route(route.destination, route.origin, route.travel_time) for route in _ROUTES
+    ]
 
 
 def test_check_autonomy():
@@ -102,17 +108,19 @@ def test_check_deadlines():
 
 
 def test_check_distances():
-    assert check_distances({0: "Tatooine", 6: "Dagobah"}, routes)
-    assert check_distances({0: "Tatooine", 6: "Dagobah", 7: "Hoth"}, routes)
-    assert check_distances({0: "Tatooine", 6: "Dagobah", 7: "Hoth", 8: "Endor"}, routes)
+    assert check_distances({0: "Tatooine", 6: "Dagobah"}, get_all_routes())
+    assert check_distances({0: "Tatooine", 6: "Dagobah", 7: "Hoth"}, get_all_routes())
     assert check_distances(
-        {0: "Tatooine", 6: "Hoth", 7: "Hoth", 8: "Hoth", 9: "Endor"}, routes
+        {0: "Tatooine", 6: "Dagobah", 7: "Hoth", 8: "Endor"}, get_all_routes()
+    )
+    assert check_distances(
+        {0: "Tatooine", 6: "Hoth", 7: "Hoth", 8: "Hoth", 9: "Endor"}, get_all_routes()
     )
     assert not check_distances(
-        {0: "Tatooine", 6: "Dagobah", 7: "Endor"}, routes
+        {0: "Tatooine", 6: "Dagobah", 7: "Endor"}, get_all_routes()
     )  # Wrong travel time (Dagobah -> Endor)
     assert not check_distances(
-        {0: "Tatooine", 6: "Dagobah", 7: "Coruscant"}, routes
+        {0: "Tatooine", 6: "Dagobah", 7: "Coruscant"}, get_all_routes()
     )  # Wrong destination (Coruscant)
 
 
@@ -129,7 +137,7 @@ TRIP_TEST_CASES = [
         "Endor",
         10,
         6,
-        5,
+        6,
     ),
     (
         "Tatooine",
@@ -140,8 +148,8 @@ TRIP_TEST_CASES = [
     ),
     ("Tatooine", "Endor", 6, 6, 0),
     ("Tatooine", "Endor", 10, 2, 0),
-    ("Tatooine", "Coruscant", 15, 4, 7),
-    ("Tatooine", "Endor", 10, 100, 12),  # Plenty of autonomy
+    ("Tatooine", "Coruscant", 15, 4, 8),
+    ("Tatooine", "Endor", 10, 100, 16),  # Plenty of autonomy
     ("Tatooine", "Endor", 100, 0, 0),  # No autonomy
     ("Tatooine", "Dantooine", 10, 5, 0),  # No route to destination
     ("Earth", "Tatooine", 10, 5, 0),  # Not a valid source
@@ -154,7 +162,7 @@ TRIP_TEST_CASES = [
     TRIP_TEST_CASES,
 )
 def test_compute_all_trips(origin, destination, max_time, autonomy, expected):
-    trips = compute_all_trips(origin, destination, routes, max_time, autonomy)
+    trips = compute_all_trips(origin, destination, get_all_routes(), max_time, autonomy)
 
     # Check we found the expected number of trips (empirical)
     assert len(trips) == expected, "Number of trips does not match"
@@ -167,7 +175,7 @@ def test_compute_all_trips(origin, destination, max_time, autonomy, expected):
     for trip in trips:
         assert check_autonomy(trip, autonomy), "Autonomy check failed"
         assert check_deadline(trip, max_time), "Deadline check failed"
-        assert check_distances(trip, routes), "Distance check failed"
+        assert check_distances(trip, get_all_routes()), "Distance check failed"
 
 
 def test_compute_all_trips_errors():
@@ -177,8 +185,8 @@ def test_compute_all_trips_errors():
 
     # Negative max_time
     with pytest.raises(ValueError):
-        compute_all_trips("Tatooine", "Endor", routes, -1, 6)
+        compute_all_trips("Tatooine", "Endor", get_all_routes(), -1, 6)
 
     # Negative autonomy
     with pytest.raises(ValueError):
-        compute_all_trips("Tatooine", "Endor", routes, 10, -1)
+        compute_all_trips("Tatooine", "Endor", get_all_routes(), 10, -1)

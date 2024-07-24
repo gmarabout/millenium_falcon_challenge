@@ -9,13 +9,18 @@ from ..domain.route import Route, Trip
 
 logger = logging.getLogger(__name__)
 
-REFUEL_TIME = 1  # Number of days needed to refuel
-
 
 def compute_all_trips(
     origin: str, destination: str, routes: List[Route], max_time: int, autonomy: int
 ) -> List[Trip]:
-    """Compute all paths between origin and destination that fits in max_time, respecting autonomy."""
+    """
+    Compute all paths between origin and destination that fits in max_time, respecting autonomy.
+    We use a simple depth-first search algorithm to explore all possible paths.
+    We also consider possible stops at each location to refuel the Falcon, or to avoid bounty hunters.
+    However, we don't go back to already visited planets to be sure to find a solution in a fairly short amount of time.
+    Avoiding bounty hunters by going back to already visited planets could be a good strategy, but we don't consider it here.
+    """
+
     if max_time < 0:
         raise ValueError("max_time should be positive")
     if autonomy < 0:
@@ -68,8 +73,9 @@ def _explore(
         logger.debug(f"Found new trip: {current_trip}")
         return
 
-    # We could decide to refuel, or just stay at the current planet for a while...
-    for wait_time in range(max_time):
+    # We could decide to refuel, or just stay at the current planet for a while.
+    # But we can wait for a maximum of `max_time - current_time` days.
+    for wait_time in range(max_time - current_time):
         if wait_time > 0:
             for i in range(wait_time + 1):
                 # Mark the days spent on the planet
@@ -77,8 +83,7 @@ def _explore(
                 current_time += i
                 current_trip[current_time] = origin
 
-        if wait_time >= REFUEL_TIME:
-            # We have enough time to refuel
+            # We can refuel
             current_autonomy = max_autonomy
 
         # Let's find next hops...
@@ -129,7 +134,6 @@ def check_autonomy(trip: Trip, autonomy: int) -> bool:
                 continue
             location = trip[i]
             if location == previous_location:
-                # As we stayed at least one day at this location, we consider the Falcon is refueled
                 remaining_autonomy = autonomy
             else:
                 consumption = i - previous_index

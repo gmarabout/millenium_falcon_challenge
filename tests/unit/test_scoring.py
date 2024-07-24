@@ -1,5 +1,8 @@
-from millenium_falcon.util.scoring import count_bounty_hunter_days, probability_captured
-from millenium_falcon.domain.bounty_hunter import BountyHunter, Hunt
+from millenium_falcon.util.scoring import (
+    count_bounty_hunter_days,
+    probability_not_captured,
+)
+from millenium_falcon.domain.bounty_hunter import BountyHunter
 import pytest
 
 
@@ -101,18 +104,13 @@ def test_count_bounty_hunter_days(trip, hunt, expected_days):
     assert count_bounty_hunter_days(trip, hunt) == expected_days
 
 
-def test_probability_captured():
-    assert probability_captured(0) == 0
-    assert probability_captured(1) == 0.1
-    assert probability_captured(2) == 0.19
-    assert probability_captured(3) == 0.271
-    assert probability_captured(4) == 0.344
-    assert probability_captured(5) == 0.41
-    assert probability_captured(6) == 0.469
-    assert probability_captured(7) == 0.522
-    assert probability_captured(8) == 0.57
+def test_probability_not_captured():
+    assert probability_not_captured(0) == 100
+    assert probability_not_captured(1) == 90
+    assert probability_not_captured(2) == 81
+    assert probability_not_captured(3) == 73
     # etc.
 
     # Just in case...
     with pytest.raises(ValueError):
-        probability_captured(-1)
+        probability_not_captured(-1)

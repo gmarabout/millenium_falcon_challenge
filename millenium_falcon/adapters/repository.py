@@ -14,9 +14,8 @@ class RouteRepository(ABC):
 class SQLAlchemyRouteRepository(RouteRepository):
     def __init__(self, engine):
         self.route_table = Table(
-            "route",
+            "routes",
             MetaData(),
-            autoload=True,
             autoload_with=engine,
         )
         self.session = sessionmaker(bind=engine)()
@@ -29,6 +28,14 @@ class SQLAlchemyRouteRepository(RouteRepository):
                 Route(
                     row.origin,
                     row.destination,
+                    row.travel_time,
+                )
+            )
+            # Routes are bidirectional
+            routes.append(
+                Route(
+                    row.destination,
+                    row.origin,
                     row.travel_time,
                 )
             )

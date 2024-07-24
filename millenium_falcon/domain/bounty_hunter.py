@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List
 
 
 @dataclass
@@ -8,8 +7,3 @@ class BountyHunter:
 
     planet: str
     day: int
-
-
-# A hunt is a list of bounty hunters.
-# Example: [BountyHunter("Tatooine", 7), BountyHunter("Endor", 9)]
-Hunt = List[BountyHunter]
