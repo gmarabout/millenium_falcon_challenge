@@ -1,21 +1,27 @@
-from ..domain.route import Route
-from typing import Set, List
+"""
+This module provides functions to compute all possible trips between two planets, respecting autonomy and time constraints.
+"""
 
-REFULLING_TIME = 1  # Time to refuel the spaceship (in days)
+import logging
+from typing import List
 
-# A trip is a dictionary where the key is the day and the value is the planet
-# Example: { 0: "Tatooine", 1: "Tatooine", 7: "Dagobah", 9: "Endor" }
-Trip = dict[int, str]
+from ..domain.route import Route, Trip
+
+logger = logging.getLogger(__name__)
 
 
 def compute_all_trips(
     origin: str, destination: str, routes: List[Route], max_time: int, autonomy: int
 ) -> List[Trip]:
-    """Compute all path between origin and destination that fits in max_time."""
-
-    # Initialization
+    """Compute all paths between origin and destination that fits in max_time, respecting autonomy."""
+    if max_time < 0:
+        raise ValueError("max_time should be positive")
+    if autonomy < 0:
+        raise ValueError("autonomy should be positive")
+    if not routes:
+        raise ValueError("routes should not be empty")
     all_trips = []
-    explore(origin, destination, routes, max_time, autonomy, 0, {0: origin}, all_trips)
+    explore(origin, destination, routes, max_time, autonomy, autonomy, 0, {}, all_trips)
     return all_trips
 
 
@@ -24,38 +30,132 @@ def explore(
     destination: str,
     routes: List[Route],
     max_time: int,
-    autonomy: int,
+    current_autonomy: int,
+    max_autonomy: int,
     current_time: int,
     current_trip: Trip,
     all_trips: List[Trip],
 ) -> None:
-    """Explore all paths between origin and destination that fits in max_time."""
+    """Explore all paths between origin and destination that fits in max_time, and respecting autonomy."""
+    current_trip[current_time] = origin
+
+    logger.debug(
+        f"Exploring {origin} -> {destination} at time {current_time} with autonomy {current_autonomy}"
+    )
 
     # We have arrived at the destination
     if origin == destination:
         all_trips.append(current_trip)
+        logger.debug(f"Found new trip: {current_trip}")
         return
 
-    # Let's find next hops...
-    next_hops = [
-        route
-        for route in routes
-        if route.origin == origin and route.destination not in current_trip.values()
-    ]
-    for route in next_hops:
-        travel_time = route.travel_time
-        arrival_time = current_time + travel_time
-        if arrival_time <= max_time and autonomy >= travel_time:
-            new_trip = current_trip.copy()
-            new_trip[arrival_time] = route.destination
-            explore(
-                route.destination,
-                destination,
-                routes,
-                max_time,
-                autonomy,
-                current_time + travel_time,
-                new_trip,
-                all_trips,
-            )
+    # We could decide to refuel, or just stay at the current planet for a while...
+    for wait_time in range(max_time):
+        for i in range(wait_time):
+            current_time += i
+            current_trip[current_time] = origin
+
+        if wait_time > 0:
+            # Refueling
+            current_autonomy = max_autonomy
+            for i in range(wait_time + 1):
+                current_time += i
+                current_trip[current_time] = origin
+
+        # Let's find next hops...
+        visited = current_trip.values()
+        next_hops = [
+            route
+            for route in routes
+            if route.origin == origin and route.destination not in visited
+        ]
+
+        if not next_hops:
+            # We are stuck, no more routes to explore
+            return
+
+        for route in next_hops:
+            arrival_time = current_time + route.travel_time
+            if arrival_time <= max_time and current_autonomy >= route.travel_time:
+                new_autonomy = current_autonomy - route.travel_time
+                new_trip = current_trip.copy()
+                explore(
+                    origin=route.destination,
+                    destination=destination,
+                    routes=routes,
+                    max_time=max_time,
+                    current_autonomy=new_autonomy,
+                    max_autonomy=max_autonomy,
+                    current_time=arrival_time,
+                    current_trip=new_trip,
+                    all_trips=all_trips,
+                )
     return
+
+
+# ----------------------
+# Check functions
+# ----------------------
+
+
+def check_autonomy(trip: Trip, autonomy: int) -> bool:
+    """Check if the trip respects the given autonomy."""
+    keys = trip.keys()
+    remaining_autonomy = autonomy
+    if keys:
+        previous_location = trip[0]
+        previous_index = 0
+        for i in sorted(keys):
+            if i == 0:
+                continue
+            location = trip[i]
+            if location == previous_location:
+                # As we stayed at least one day at this location, we consider the Falcon is refueled
+                remaining_autonomy = autonomy
+            else:
+                consumption = i - previous_index
+                remaining_autonomy -= consumption
+            if remaining_autonomy < 0:
+                return False
+            previous_location = location
+            previous_index = i
+    return True
+
+
+def check_deadline(trip: Trip, deadline: int) -> bool:
+    """Check if the trip respects the given deadline."""
+    keys = trip.keys()
+    if keys:
+        return max(keys) <= deadline
+    return True
+
+
+def check_distances(trip: Trip, routes: List[Route]) -> bool:
+    """Check if the trip respects the given distances."""
+    keys = trip.keys()
+    if keys:
+        previous_location = trip[0]
+        previous_index = 0
+        for i in sorted(keys):
+            if i == 0:
+                continue
+            location = trip[i]
+            if location == previous_location:
+                previous_index = i
+                continue
+            route = next(
+                (
+                    route
+                    for route in routes
+                    if route.origin == previous_location
+                    and route.destination == location
+                ),
+                None,
+            )
+            if not route:
+                return False
+            if i - previous_index != route.travel_time:
+                return False
+            previous_location = location
+            previous_index = i
+    return True
