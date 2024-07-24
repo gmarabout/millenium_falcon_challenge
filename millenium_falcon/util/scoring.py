@@ -1,5 +1,5 @@
 """
-
+This module provides functions to compute the odds of being captured by a bounty hunter.
 """
 
 import math
