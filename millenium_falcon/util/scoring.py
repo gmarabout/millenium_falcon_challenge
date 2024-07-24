@@ -4,7 +4,7 @@ This module provides functions to compute the odds of being captured by a bounty
 
 import math
 
-from ..domain.bounty_hunter import BountyHunter, Hunt
+from ..domain.bounty_hunter import Hunt
 from ..domain.route import Trip
 
 

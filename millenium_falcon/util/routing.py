@@ -9,6 +9,8 @@ from ..domain.route import Route, Trip
 
 logger = logging.getLogger(__name__)
 
+REFUEL_TIME = 1  # Number of days needed to refuel
+
 
 def compute_all_trips(
     origin: str, destination: str, routes: List[Route], max_time: int, autonomy: int
@@ -20,12 +22,27 @@ def compute_all_trips(
         raise ValueError("autonomy should be positive")
     if not routes:
         raise ValueError("routes should not be empty")
+
+    # Initial state
     all_trips = []
-    explore(origin, destination, routes, max_time, autonomy, autonomy, 0, {}, all_trips)
+    initial_trip = {}
+
+    # Recursively find all paths from origin to destination
+    _explore(
+        origin=origin,
+        destination=destination,
+        routes=routes,
+        max_time=max_time,
+        current_autonomy=autonomy,
+        max_autonomy=autonomy,
+        current_time=0,
+        current_trip=initial_trip,
+        all_trips=all_trips,
+    )
     return all_trips
 
 
-def explore(
+def _explore(
     origin: str,
     destination: str,
     routes: List[Route],
@@ -36,7 +53,9 @@ def explore(
     current_trip: Trip,
     all_trips: List[Trip],
 ) -> None:
-    """Explore all paths between origin and destination that fits in max_time, and respecting autonomy."""
+    """Explore all paths between origin and destination that fits in max_time,
+    and respecting autonomy.
+    """
     current_trip[current_time] = origin
 
     logger.debug(
@@ -51,16 +70,16 @@ def explore(
 
     # We could decide to refuel, or just stay at the current planet for a while...
     for wait_time in range(max_time):
-        for i in range(wait_time):
-            current_time += i
-            current_trip[current_time] = origin
-
         if wait_time > 0:
-            # Refueling
-            current_autonomy = max_autonomy
             for i in range(wait_time + 1):
+                # Mark the days spent on the planet
+                # ex: `{... 2: 'Tatooine', 3: 'Tatooine', 4: 'Tatooine', ...}`
                 current_time += i
                 current_trip[current_time] = origin
+
+        if wait_time >= REFUEL_TIME:
+            # We have enough time to refuel
+            current_autonomy = max_autonomy
 
         # Let's find next hops...
         visited = current_trip.values()
@@ -79,7 +98,7 @@ def explore(
             if arrival_time <= max_time and current_autonomy >= route.travel_time:
                 new_autonomy = current_autonomy - route.travel_time
                 new_trip = current_trip.copy()
-                explore(
+                _explore(
                     origin=route.destination,
                     destination=destination,
                     routes=routes,

@@ -13,4 +13,5 @@ class Route:
 
 # A trip is a dictionary where the key is the day and the value is the planet where the Falcon is.
 # Example: { 0: "Tatooine", 1: "Tatooine", 7: "Dagobah", 9: "Endor" }
+# This allows easy "lookup by time".
 Trip = dict[int, str]

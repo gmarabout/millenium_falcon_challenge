@@ -140,7 +140,7 @@ TRIP_TEST_CASES = [
     ),
     ("Tatooine", "Endor", 6, 6, 0),
     ("Tatooine", "Endor", 10, 2, 0),
-    ("Tatooine", "Coruscant", 15, 4, 4),
+    ("Tatooine", "Coruscant", 15, 4, 7),
     ("Tatooine", "Endor", 10, 100, 12),  # Plenty of autonomy
     ("Tatooine", "Endor", 100, 0, 0),  # No autonomy
     ("Tatooine", "Dantooine", 10, 5, 0),  # No route to destination
@@ -154,8 +154,16 @@ TRIP_TEST_CASES = [
     TRIP_TEST_CASES,
 )
 def test_compute_all_trips(origin, destination, max_time, autonomy, expected):
-    trips = list(compute_all_trips(origin, destination, routes, max_time, autonomy))
+    trips = compute_all_trips(origin, destination, routes, max_time, autonomy)
+
+    # Check we found the expected number of trips (empirical)
     assert len(trips) == expected, "Number of trips does not match"
+
+    # Make sure we don't have duplicates...
+    trips_as_tuples = [tuple(trip.items()) for trip in trips]
+    assert len(set(trips_as_tuples)) == len(trips_as_tuples), "Duplicate trips found"
+
+    # Check each trip
     for trip in trips:
         assert check_autonomy(trip, autonomy), "Autonomy check failed"
         assert check_deadline(trip, max_time), "Deadline check failed"
