@@ -79,7 +79,7 @@ def _explore(
         return
 
     # We could decide to stay at the current planet for a while (ex: to refuel).
-    # But we can wait up to `max_time - current_time` days.
+    # We can wait up to `max_time - current_time` days.
     for wait_time in range(max_time - current_time):
         if wait_time > 0:
             for i in range(wait_time + 1):
@@ -88,7 +88,7 @@ def _explore(
                 current_time += i
                 current_trip[current_time] = origin
 
-            #
+            # We have time to refuel the Falcon
             if wait_time >= REFUEL_TIME:
                 current_autonomy = max_autonomy
 
