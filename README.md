@@ -7,8 +7,8 @@ This project is a solution for the Dataiku [Millenium Falcon Challenge](https://
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+- [Source Code Organization](#source-code-organization)
+- [How it works](#how-it-works)
 
 ## Requirements
 
