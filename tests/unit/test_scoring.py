@@ -2,7 +2,6 @@ from millenium_falcon.util.scoring import (
     count_bounty_hunter_days,
     probability_not_captured,
 )
-from millenium_falcon.domain.bounty_hunter import BountyHunter
 import pytest
 
 

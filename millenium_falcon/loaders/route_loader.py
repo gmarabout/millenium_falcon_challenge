@@ -6,12 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from ..domain.route import Route
 
 
-class RouteRepository(ABC):
-    def get_all(self) -> List[Route]:
-        pass
-
-
-class SQLAlchemyRouteRepository(RouteRepository):
+class RouteLoader:
     def __init__(self, engine):
         self.route_table = Table(
             "routes",
@@ -20,7 +15,7 @@ class SQLAlchemyRouteRepository(RouteRepository):
         )
         self.session = sessionmaker(bind=engine)()
 
-    def get_all(self) -> List[Route]:
+    def load_all_routes(self) -> List[Route]:
         results = self.session.query(self.route_table).all()
         routes = []
         for row in results:

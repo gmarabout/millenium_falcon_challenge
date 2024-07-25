@@ -7,8 +7,10 @@ from typing import List, Tuple
 
 from ..domain.route import Trip
 
+BountyHunter = Tuple[str, int]  # A bounty hunter is a tuple (planet, day)
 
-def count_bounty_hunter_days(trip: Trip, bounty_hunters: List[Tuple[str, int]]) -> int:
+
+def count_bounty_hunter_days(trip: Trip, bounty_hunters: List[BountyHunter]) -> int:
     """Count the number of days spent on a planet when a bounty hunter is present."""
     n = 0
     for day, planet in trip.items():

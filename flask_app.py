@@ -6,12 +6,11 @@ from flask_pydantic import validate
 from pydantic import BaseModel
 
 from config import get_db_engine, get_millenium_falcon_config
-from millenium_falcon.adapters.repository import SQLAlchemyRouteRepository
+from millenium_falcon.loaders.route_loader import RouteLoader
 from millenium_falcon.services.falcon_service import FalconService
 
 app = Flask(__name__)
 db_url = os.environ.get("DATABASE_URL", "sqlite:///universe.db")
-secret_key = os.environ.get("SECRET_KEY", "dev")
 
 
 class BountyHunterSchema(BaseModel):
@@ -29,9 +28,9 @@ def home():
     return render_template("index.html")
 
 
-@app.route("/falcon/success", methods=["POST", "PUT"])
+@app.route("/api/falcon/success_probability", methods=["POST", "PUT"])
 @validate()
-def get_falcon_success(body: EmpireSchema):
+def get_falcon_success_probability(body: EmpireSchema):
     config = get_millenium_falcon_config()
     db_engine = get_db_engine()
 
@@ -39,7 +38,7 @@ def get_falcon_success(body: EmpireSchema):
     departure = config["departure"]
     arrival = config["arrival"]
 
-    routes = SQLAlchemyRouteRepository(db_engine).get_all()
+    routes = RouteLoader(db_engine).load_all_routes()
     service = FalconService(autonomy, departure, arrival, routes)
 
     bounty_hunters = [
@@ -54,4 +53,4 @@ def get_falcon_success(body: EmpireSchema):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5000)

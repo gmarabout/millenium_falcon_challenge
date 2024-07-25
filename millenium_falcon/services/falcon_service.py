@@ -1,7 +1,6 @@
 import logging
 from typing import List, Tuple
 
-from ..domain.bounty_hunter import BountyHunter
 from ..domain.route import Trip, Route
 from ..util.routing import compute_all_trips
 from ..util.scoring import count_bounty_hunter_days, probability_not_captured
@@ -21,7 +20,7 @@ class FalconService:
         all_routes (List[Route]): A list of all available routes for the Millennium Falcon to travel between locations.
 
     Methods:
-        success_probability(countdown: int, bounty_hunters: List[BountyHunter]) -> Tuple[Trip, int]:
+        success_probability(countdown: int, bounty_hunters: List[Tuple[str, int]]) -> Tuple[Trip, int]:
             Compute the probability of successfully reaching the destination without being captured by bounty hunters.
 
     """
@@ -37,14 +36,14 @@ class FalconService:
     def success_probability(
         self,
         countdown: int,
-        bounty_hunters: List[BountyHunter],
+        bounty_hunters: List[Tuple[str, int]],
     ) -> Tuple[Trip, int]:
         """
         Compute the probability of successfully reaching the destination without being captured by bounty hunters.
 
         Args:
             countdown (int): The remaining time in days before the Millennium Falcon must reach the destination.
-            bounty_hunters (List[BountyHunter]): A list of bounty hunters that may attempt to capture the Millennium Falcon.
+            bounty_hunters (List[Tuple[str, int]]): A list of bounty hunters that may attempt to capture the Millennium Falcon.
 
         Returns:
             Tuple[Trip, int]: A tuple containing the best trip (Trip object) and its success probability (int).

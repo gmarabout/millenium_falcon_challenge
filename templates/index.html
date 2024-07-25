@@ -24,7 +24,7 @@
         padding: 20px;
         border: 1px solid #ccc;
         border-radius: 5px;
-        background-color: white;
+        background-color: rgba(255, 255, 255, 0.8);
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       }
       input[type="file"] {
@@ -97,7 +97,7 @@
       function sendJsonToApi(json) {
         const output = document.getElementById("output");
 
-        fetch("{{ url_for('get_falcon_success') }}", {
+        fetch("{{ url_for('get_falcon_success_probability') }}", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -108,7 +108,7 @@
           .then((data) => {
             const score = data["score"];
 
-            output.textContent = `The Millenium Falcon has ${score}% chance to escape bounty hunters and reach Endor in time!`;
+            output.textContent = `The Millenium Falcon has ${score}% chance to succeed!`;
           })
           .catch((error) => {
             output.textContent = "Error calling API: " + error.message;
