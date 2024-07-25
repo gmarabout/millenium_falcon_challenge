@@ -5,18 +5,19 @@ from sqlalchemy import create_engine
 
 logger = logging.getLogger(__name__)
 
-with open("millenium-falcon.json") as f:
-    logger.debug("Loading millenium-falcon config")
-    millenium_falcon_config = json.load(f)
 
-    routes_db = millenium_falcon_config["routes_db"]
-    logger.debug(f"Connecting to routes DB: {routes_db}")
+def load_config(json_config_file):
+    """Load a JSON configuration file, and return the parsed content as a dict."""
+    with open(json_config_file) as f:
+        logger.info("Loading configuration from %s", json_config_file)
+        return json.load(f)
+
+
+def create_db_engine(config):
+    """Create a SQLAlchemy database engine from a configuration dict."""
+    routes_db = config.get("routes_db")
+    if not routes_db:
+        raise ValueError("Missing routes_db in config")
+    logger.info("Creating database engine for %s", routes_db)
     db_engine = create_engine(f"sqlite:///{routes_db}")
-
-
-def get_millenium_falcon_config():
-    return millenium_falcon_config
-
-
-def get_db_engine():
     return db_engine
