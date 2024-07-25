@@ -1,21 +1,30 @@
-# Project Name
+# Millenium Falcon Challenge
 
-A brief description of the project goes here.
+This project is a solution for the Dataiku [Millenium Falcon Challenge](https://github.com/dataiku/millenium-falcon-challenge).
 
 ## Table of Contents
 
+- [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
 
+## Requirements
+
+You need Python >3.12 installed and Poetry >1.8 for dependencies.
+
 ## Installation
 
-Instructions on how to install the project can be found here.
+To install the depencencies, enter:
+
+```shell
+poetry install
+```
 
 ## Usage
 
-Information on how to use the project can be found here.
+The web app is a Flask app with a single page.
 
 ## Contributing
 

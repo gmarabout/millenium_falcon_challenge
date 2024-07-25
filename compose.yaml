@@ -1,0 +1,14 @@
+services:
+  millenium_falcon:
+    image: millenium_falcon
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    networks:
+      - my-network
+networks:
+  my-network:
+    driver: bridge
+  

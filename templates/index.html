@@ -106,9 +106,14 @@
         })
           .then((response) => response.json())
           .then((data) => {
-            const score = data["score"];
-
-            output.textContent = `The Millenium Falcon has ${score}% chance to succeed!`;
+            if (data["validation_error"]) {
+              output.textContent =
+                "This is not a valid JSON to save the Galaxy!";
+              return;
+            } else {
+              const score = data["score"];
+              output.textContent = `The Millenium Falcon has ${score}% chance to succeed!`;
+            }
           })
           .catch((error) => {
             output.textContent = "Error calling API: " + error.message;
