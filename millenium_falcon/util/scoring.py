@@ -3,18 +3,17 @@ This module provides functions to compute the odds of being captured by a bounty
 """
 
 import math
-from typing import List
+from typing import List, Tuple
 
-from ..domain.bounty_hunter import BountyHunter
 from ..domain.route import Trip
 
 
-def count_bounty_hunter_days(trip: Trip, bounty_hunters: List[BountyHunter]) -> int:
+def count_bounty_hunter_days(trip: Trip, bounty_hunters: List[Tuple[str, int]]) -> int:
     """Count the number of days spent on a planet when a bounty hunter is present."""
     n = 0
     for day, planet in trip.items():
         for hunter in bounty_hunters:
-            if hunter.planet == planet and hunter.day == day:
+            if hunter[0] == planet and hunter[1] == day:
                 n += 1
     return n
 

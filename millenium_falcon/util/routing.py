@@ -10,6 +10,9 @@ from ..domain.route import Route, Trip
 logger = logging.getLogger(__name__)
 
 
+REFUEL_TIME = 1  # The Falcon can refuel in 1 day
+
+
 def compute_all_trips(
     origin: str, destination: str, routes: List[Route], max_time: int, autonomy: int
 ) -> List[Trip]:
@@ -58,8 +61,9 @@ def _explore(
     current_trip: Trip,
     all_trips: List[Trip],
 ) -> None:
-    """Explore all paths between origin and destination that fits in max_time,
-    and respecting autonomy.
+    """
+    Explore all paths between origin and destination that fits in max_time, and respecting autonomy.
+    Complexity: O(max_time * number_of_routes)
     """
     current_trip[current_time] = origin
 
@@ -73,18 +77,19 @@ def _explore(
         logger.debug(f"Found new trip: {current_trip}")
         return
 
-    # We could decide to refuel, or just stay at the current planet for a while.
-    # But we can wait for a maximum of `max_time - current_time` days.
+    # We could decide to stay at the current planet for a while (ex: to refuel).
+    # But we can wait up to `max_time - current_time` days.
     for wait_time in range(max_time - current_time):
         if wait_time > 0:
             for i in range(wait_time + 1):
-                # Mark the days spent on the planet
-                # ex: `{... 2: 'Tatooine', 3: 'Tatooine', 4: 'Tatooine', ...}`
+                # Mark the days spent on this planet
+                # ex: `{..., 2: 'Tatooine', 3: 'Tatooine', 4: 'Tatooine', ...}`
                 current_time += i
                 current_trip[current_time] = origin
 
-            # We can refuel
-            current_autonomy = max_autonomy
+            #
+            if wait_time >= REFUEL_TIME:
+                current_autonomy = max_autonomy
 
         # Let's find next hops...
         visited = current_trip.values()
@@ -127,6 +132,7 @@ def check_autonomy(trip: Trip, autonomy: int) -> bool:
     keys = trip.keys()
     remaining_autonomy = autonomy
     if keys:
+        duration_at_same_location = 0
         previous_location = trip[0]
         previous_index = 0
         for i in sorted(keys):
@@ -134,8 +140,11 @@ def check_autonomy(trip: Trip, autonomy: int) -> bool:
                 continue
             location = trip[i]
             if location == previous_location:
-                remaining_autonomy = autonomy
+                duration_at_same_location += 1
+                if duration_at_same_location >= REFUEL_TIME:
+                    remaining_autonomy = autonomy
             else:
+                duration_at_same_location = 0
                 consumption = i - previous_index
                 remaining_autonomy -= consumption
             if remaining_autonomy < 0:

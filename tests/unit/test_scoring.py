@@ -8,6 +8,7 @@ import pytest
 
 test_cases = [
     (
+        # Trip
         {
             0: "Tatooine",
             3: "Bespin",
@@ -16,18 +17,20 @@ test_cases = [
             6: "Naboo",
             7: "Naboo",
         },
+        # Bounty hunters
         [
-            BountyHunter("Tatooine", 1),
-            BountyHunter("Tatooine", 2),
-            BountyHunter("Bespin", 2),
-            BountyHunter("Bespin", 3),
-            BountyHunter("Bespin", 4),
-            BountyHunter("Naboo", 4),
-            BountyHunter("Naboo", 5),
+            ("Tatooine", 1),
+            ("Tatooine", 2),
+            ("Bespin", 2),
+            ("Bespin", 3),
+            ("Bespin", 4),
+            ("Naboo", 4),
+            ("Naboo", 5),
         ],
         3,
     ),
     (
+        # Trip
         {
             0: "Tatooine",
             1: "Tatooine",
@@ -36,17 +39,19 @@ test_cases = [
             4: "Tatooine",
             5: "Tatooine",
         },
+        # Bounty hunters
         [
-            BountyHunter("Tatooine", 0),
-            BountyHunter("Tatooine", 1),
-            BountyHunter("Tatooine", 2),
-            BountyHunter("Tatooine", 3),
-            BountyHunter("Tatooine", 4),
-            BountyHunter("Tatooine", 5),
+            ("Tatooine", 0),
+            ("Tatooine", 1),
+            ("Tatooine", 2),
+            ("Tatooine", 3),
+            ("Tatooine", 4),
+            ("Tatooine", 5),
         ],
         6,
     ),
     (
+        # Trip
         {
             0: "Tatooine",
             1: "Naboo",
@@ -55,17 +60,19 @@ test_cases = [
             4: "Endor",
             5: "Alderaan",
         },
+        # Bounty hunters
         [
-            BountyHunter("Naboo", 0),
-            BountyHunter("Tatooine", 1),
-            BountyHunter("Tatooine", 2),
-            BountyHunter("Endor", 3),
-            BountyHunter("Tatooine", 4),
-            BountyHunter("Tatooine", 5),
+            ("Naboo", 0),
+            ("Tatooine", 1),
+            ("Tatooine", 2),
+            ("Endor", 3),
+            ("Tatooine", 4),
+            ("Tatooine", 5),
         ],
         0,
     ),
     (
+        # Trip
         {
             0: "Tatooine",
             1: "Naboo",
@@ -74,10 +81,12 @@ test_cases = [
             4: "Endor",
             5: "Alderaan",
         },
-        [],  # No Bounty hunters
+        # Bounty hunters
+        [],
         0,
     ),
     (
+        # Trip
         {
             0: "Tatooine",
             1: "Naboo",
@@ -86,22 +95,23 @@ test_cases = [
             4: "Endor",
             5: "Alderaan",
         },
+        # Bounty hunters
         [
-            BountyHunter("Tatooine", 0),
-            BountyHunter("Naboo", 1),
-            BountyHunter("Endor", 2),
-            BountyHunter("Mustafar", 3),
-            BountyHunter("Endor", 4),
-            BountyHunter("Alderaan", 5),
+            ("Tatooine", 0),
+            ("Naboo", 1),
+            ("Endor", 2),
+            ("Mustafar", 3),
+            ("Endor", 4),
+            ("Alderaan", 5),
         ],
         6,
     ),
 ]
 
 
-@pytest.mark.parametrize("trip, hunt, expected_days", test_cases)
-def test_count_bounty_hunter_days(trip, hunt, expected_days):
-    assert count_bounty_hunter_days(trip, hunt) == expected_days
+@pytest.mark.parametrize("trip, bounty_hunters, expected_days", test_cases)
+def test_count_bounty_hunter_days(trip, bounty_hunters, expected_days):
+    assert count_bounty_hunter_days(trip, bounty_hunters) == expected_days
 
 
 def test_probability_not_captured():

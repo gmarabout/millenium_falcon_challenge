@@ -164,10 +164,10 @@ TRIP_TEST_CASES = [
 def test_compute_all_trips(origin, destination, max_time, autonomy, expected):
     trips = compute_all_trips(origin, destination, get_all_routes(), max_time, autonomy)
 
-    # Check we found the expected number of trips (empirical)
+    # Check we found the expected number of trips
     assert len(trips) == expected, "Number of trips does not match"
 
-    # Make sure we don't have duplicates...
+    # Make sure we don't produce duplicated trips...
     trips_as_tuples = [tuple(trip.items()) for trip in trips]
     assert len(set(trips_as_tuples)) == len(trips_as_tuples), "Duplicate trips found"
 
