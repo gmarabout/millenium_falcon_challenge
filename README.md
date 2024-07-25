@@ -24,12 +24,83 @@ poetry install
 
 ## Usage
 
+### Run the tests
+
+Tests are written using Pytest.
+To run all tests:
+
+```shell
+poetry run pytest
+```
+
+### The Web app
+
 The web app is a Flask app with a single page.
+To run the app, enter in the terminal:
 
-## Contributing
+```shell
+poetry run flask_app.py
+```
 
-Guidelines on how to contribute to the project can be found here.
+Then you can open your Web browser to [http://localhost:5000](http://localhost:5000). This will show a simple web page asking to select a JSON file describing the plans of the Empire.
+This file must be a valid JSON and have the following structure:
 
-## License
+```json
+{
+  "countdown": 6,
+  "bounty_hunters": [
+    { "planet": "Tatooine", "day": 4 },
+    { "planet": "Dagobah", "day": 5 }
+  ]
+}
+```
 
-The project is licensed under the [MIT License](LICENSE).
+If not, you will get a complain from R2D2.
+Once selected, press "Upload and Send" and see the odds of seeing a good ending for Star Wars.
+
+### The Command Line Interface (CLI)
+
+The CLI is made in Python with Click and available via the file `cli.py`.
+To run it, enter in your terminal:
+
+```bash
+$ poetry run cli.py <path to the falcon configuration file> <path to the Empire plans file>
+```
+
+You can use the `--display-trip` option to display the safest trip to Endor, if any.
+
+## Source Code Organization
+
+The source code organization of the project follows a typical Python project structure.
+Here is a brief overview:
+
+- `flask_app.py`: The main file for running the web app using Flask. This module also declares the HTTP endpoints.
+- `falcon.py`: The main file for running the command line interface (CLI) using Click.
+- `config.py`: Contains configuration helpers for the project.
+- `millenium_falcon`
+  - `domain`: Contains the domain classes and structures (mainly route and trip)
+  - `loaders`: Contains data loaders (only route_loader)
+  - `services`: Contains services, mainly `falcon_services.py` that implement the services for the Falcon
+  - `util`
+    - `routing.py`: Contains the code for finding trip accross planets.
+    - `scoring.py`: Contains the code to score trips (basically compute the odds of not being caughts by Bounty Hunters)
+- `tests`: Contains tests
+- `templates`: Contains Flask template. This app contains only one page and one template.
+- `data`: Contains some "Empire plans" you can use for testing.
+
+## How it works
+
+The app mechanism is very simple: Given the Falcon and Empire config, we first use the `routing` algorithm to find all possible trips from "departure" to "destination".
+This is implemented using a depth first tree search.
+The noticable points about this algorithm are:
+
+- The search will not revisit already visited locations. This is a implementation choice to reduce the complexity of the tree search. However, going back to already visited could have been a good strategy to avoid bounty hunters (as soon as we arrive in time to save Endor).
+- The search will evaluate the possibility to stay on a planet a day or more (but no more than the remaining time until Endor destruction). This offers the possibility to find a trip that is safer (avoiding bounty hunters), and gives refuling opportunities (at cost of extra complexity).
+- The `millenium_falcon.util.routing` module also provide some _checkers_ mostly used in unit test to verify found trips respect the autonomy, deadline, and distances contraints.
+
+See [routing.py](millenium_falcon/util/routing.py) for more details about the routing implementation.
+
+Once we found at least one trip, respecting all the constraints, we pass each of them to the `scoring` module to determine the probability of not being caught.
+We keep the best trip and its score. These are the response sent to the web page (even if the web page displays only the score, as requested).
+
+See [scoring.py](millenium_falcon/util/scoring.py) for more details about the implementation.
