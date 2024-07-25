@@ -64,10 +64,28 @@ The CLI is made in Python with Click and available via the file `cli.py`.
 To run it, enter in your terminal:
 
 ```bash
-$ poetry run cli.py <path to the falcon configuration file> <path to the Empire plans file>
+$ poetry shell
+$ python cli.py <path to the falcon configuration file> <path to the Empire plans file>
+```
+
+Example:
+
+```bash
+$ python cli.py millenium-falcon.json data/empire2.json
+Probability to succeed: 81%
 ```
 
 You can use the `--display-trip` option to display the safest trip to Endor, if any.
+
+```bash
+$ python cli.py millenium-falcon.json data/empire2.json --display-trip
+Trip details:
+ 0: Tatooine
+ 6: Hoth
+ 7: Hoth
+ 8: Endor
+Probability to succeed: 81%
+```
 
 ## Source Code Organization
 
@@ -75,7 +93,7 @@ The source code organization of the project follows a typical Python project str
 Here is a brief overview:
 
 - `flask_app.py`: The main file for running the web app using Flask. This module also declares the HTTP endpoints.
-- `falcon.py`: The main file for running the command line interface (CLI) using Click.
+- `cli.py`: The main file for running the command line interface (CLI) using Click.
 - `config.py`: Contains configuration helpers for the project.
 - `millenium_falcon`
   - `domain`: Contains the domain classes and structures (mainly route and trip)
