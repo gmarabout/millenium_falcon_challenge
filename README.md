@@ -58,6 +58,14 @@ This file must be a valid JSON and have the following structure:
 If not, you will get a complain from R2D2.
 Once selected, press "Upload and Send" and see the odds of seeing a good ending for Star Wars.
 
+#### Using Docker and Docker Compose
+
+You can also run the Web app using Docker compose, which can be convenient if you don't want to install Python and Poetry:
+
+```bash
+$ docker compose up -d
+```
+
 ### The Command Line Interface (CLI)
 
 The CLI is made in Python with Click and available via the file `cli.py`.
