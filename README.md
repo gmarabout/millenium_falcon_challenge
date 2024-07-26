@@ -39,7 +39,7 @@ The web app is a Flask app with a single page.
 To run the app, enter in the terminal:
 
 ```shell
-poetry run flask_app.py
+poetry run python flask_app.py
 ```
 
 Then you can open your Web browser to [http://localhost:5000](http://localhost:5000). This will show a simple web page asking to select a JSON file describing the plans of the Empire.
