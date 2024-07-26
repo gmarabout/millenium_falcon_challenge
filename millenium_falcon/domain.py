@@ -1,3 +1,7 @@
+"""
+Domain classes for the Millenium Falcon problem.
+"""
+
 from dataclasses import dataclass
 from typing import List
 

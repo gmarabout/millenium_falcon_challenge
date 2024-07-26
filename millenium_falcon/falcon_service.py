@@ -1,3 +1,7 @@
+"""
+This module provides Falcon-related services.
+"""
+
 import logging
 from typing import List, Tuple
 

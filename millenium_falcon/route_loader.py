@@ -1,3 +1,8 @@
+"""
+This module is responsible for loading routes from the database.
+It uses SQLAlchemy to interact with the database and load the routes.
+"""
+
 from abc import ABC, abstractmethod
 from typing import List
 from sqlalchemy import MetaData, Table
