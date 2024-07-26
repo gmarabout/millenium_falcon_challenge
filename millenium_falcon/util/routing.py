@@ -63,7 +63,7 @@ def _explore(
 ) -> None:
     """
     Explore all paths between origin and destination that fits in max_time, and respecting autonomy.
-    Time complexity: O(max_time*num_of_planets!)
+    Time complexity: O(max_time*num_of_planets*num_of_routes)
     Space complexity: O(max_time*num_of_planets)
     """
     current_trip[current_time] = origin

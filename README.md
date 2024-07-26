@@ -122,3 +122,5 @@ Once we found at least one trip, respecting all the constraints, we pass each of
 We keep the best trip and its score. These are the response sent to the web page (even if the web page displays only the score, as requested).
 
 See [scoring.py](millenium_falcon/util/scoring.py) for more details about the implementation.
+
+## Possible Improvements
