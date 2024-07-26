@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy import MetaData, Table
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
-from ..domain.route import Route
+from .domain import Route
 
 
 class RouteLoader:

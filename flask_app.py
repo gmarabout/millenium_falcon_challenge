@@ -6,8 +6,8 @@ from flask_pydantic import validate
 from pydantic import BaseModel
 
 from config import load_config, create_db_engine
-from millenium_falcon.loaders.route_loader import RouteLoader
-from millenium_falcon.services.falcon_service import FalconService
+from millenium_falcon.route_loader import RouteLoader
+from millenium_falcon.falcon_service import FalconService
 
 FALCON_CONFIG_FILE = os.environ.get("FALCON_CONFIG_FILE", "millenium-falcon.json")
 

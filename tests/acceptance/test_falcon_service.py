@@ -1,4 +1,4 @@
-from millenium_falcon.services.falcon_service import FalconService
+from millenium_falcon.falcon_service import FalconService
 
 
 def test_falcon_service_example_1(routes):

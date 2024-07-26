@@ -5,7 +5,7 @@ This module provides functions to compute the odds of being captured by a bounty
 import math
 from typing import List, Tuple
 
-from ..domain.route import Trip
+from .domain import Trip
 
 BountyHunter = Tuple[str, int]  # A bounty hunter is a tuple (planet, day)
 

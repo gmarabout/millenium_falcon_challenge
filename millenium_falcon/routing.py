@@ -5,7 +5,7 @@ This module provides functions to compute all possible trips between two planets
 import logging
 from typing import List
 
-from ..domain.route import Route, Trip
+from .domain import Route, Trip
 
 logger = logging.getLogger(__name__)
 

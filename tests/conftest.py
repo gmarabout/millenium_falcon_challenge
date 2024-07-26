@@ -3,9 +3,9 @@ from typing import List
 import pytest
 from sqlalchemy import Engine, create_engine
 
-from millenium_falcon.loaders.route_loader import RouteLoader
-from millenium_falcon.domain.route import Route
 from flask_app import app
+from millenium_falcon.domain import Route
+from millenium_falcon.route_loader import RouteLoader
 
 
 @pytest.fixture

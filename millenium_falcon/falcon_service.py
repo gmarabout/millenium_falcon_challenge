@@ -1,9 +1,9 @@
 import logging
 from typing import List, Tuple
 
-from ..domain.route import Trip, Route
-from ..util.routing import compute_all_trips
-from ..util.scoring import count_bounty_hunter_days, probability_not_captured
+from .domain import Trip, Route
+from .routing import compute_all_trips
+from .scoring import count_bounty_hunter_days, probability_not_captured
 
 logger = logging.getLogger(__name__)
 

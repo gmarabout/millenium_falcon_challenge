@@ -1,4 +1,4 @@
-from millenium_falcon.util.scoring import (
+from millenium_falcon.scoring import (
     count_bounty_hunter_days,
     probability_not_captured,
 )

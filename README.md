@@ -95,14 +95,13 @@ Here is a brief overview:
 - `flask_app.py`: The main file for running the web app using Flask. This module also declares the HTTP endpoints.
 - `cli.py`: The main file for running the command line interface (CLI) using Click.
 - `config.py`: Contains configuration helpers for the project.
-- `millenium_falcon`
-  - `domain`: Contains the domain classes and structures (mainly route and trip)
-  - `loaders`: Contains data loaders (only route_loader)
-  - `services`: Contains services, mainly `falcon_services.py` that implement the services for the Falcon
-  - `util`
-    - `routing.py`: Contains the code for finding trip accross planets.
-    - `scoring.py`: Contains the code to score trips (basically compute the odds of not being caughts by Bounty Hunters)
-- `tests`: Contains tests
+- `millenium_falcon` : Contains the backend modules
+  - `domain.py`: Contains the domain classes and structures (mainly route and trip)
+  - `route_loader.py`: Contains route loaders, relies on SQLAlchemy.
+  - `falcon_services.py`: Contains business logic for the Falcon-related services.
+  - `routing.py`: Contains the code for finding trip accross planets.
+  - `scoring.py`: Contains the code to score trips (basically compute the odds of not being caughts by Bounty Hunters)
+- `tests`: Contains tests (unit, acceptance).
 - `templates`: Contains Flask template. This app contains only one page and one template.
 - `data`: Contains some "Empire plans" you can use for testing.
 
@@ -114,13 +113,13 @@ The noticable points about this algorithm are:
 
 - The search will not revisit already visited locations. This is a implementation choice to reduce the complexity of the tree search. However, going back to already visited could have been a good strategy to avoid bounty hunters (as soon as we arrive in time to save Endor).
 - The search will evaluate the possibility to stay on a planet a day or more (but no more than the remaining time until Endor destruction). This offers the possibility to find a trip that is safer (avoiding bounty hunters), and gives refuling opportunities (at cost of extra complexity).
-- The `millenium_falcon.util.routing` module also provide some _checkers_ mostly used in unit test to verify found trips respect the autonomy, deadline, and distances contraints.
+- The `millenium_falcon/routing.py` module also provide some _checkers_ used in unit test to verify found trips respect the autonomy, deadline, and distances contraints.
 
-See [routing.py](millenium_falcon/util/routing.py) for more details about the routing implementation.
+See [routing.py](millenium_falcon/routing.py) for more details about the routing implementation.
 
 Once we found at least one trip, respecting all the constraints, we pass each of them to the `scoring` module to determine the probability of not being caught.
 We keep the best trip and its score. These are the response sent to the web page (even if the web page displays only the score, as requested).
 
-See [scoring.py](millenium_falcon/util/scoring.py) for more details about the implementation.
+See [scoring.py](millenium_falcon/scoring.py) for more details about the implementation.
 
 ## Possible Improvements

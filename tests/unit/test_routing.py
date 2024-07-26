@@ -2,13 +2,13 @@ from pprint import pprint
 
 import pytest
 
-from millenium_falcon.domain.route import Route, Trip
-from millenium_falcon.util.routing import (
+from millenium_falcon.routing import (
     compute_all_trips,
     check_autonomy,
     check_deadline,
     check_distances,
 )
+from millenium_falcon.domain import Route
 
 
 _ROUTES = [
