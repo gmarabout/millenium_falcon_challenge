@@ -131,3 +131,6 @@ We keep the best trip and its score. These are the response sent to the web page
 See [scoring.py](millenium_falcon/scoring.py) for more details about the implementation.
 
 ## Possible Improvements
+
+- Evaluate a routing algorithm that would use Empire plans to explicitely and more intelligently avoid bounty hunters.
+- Evaluate a routing algorithm that would prefer revisiting a planet to avoid bounty hunters (as soon as it respect the deadline).
