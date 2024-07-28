@@ -146,6 +146,13 @@ TRIP_TEST_CASES = [
     ("Tatooine", "Endor", 10, 2, 0),
     ("Tatooine", "Coruscant", 15, 4, 8),
     ("Tatooine", "Endor", 10, 100, 16),  # Plenty of autonomy
+    (
+        "Tatooine",
+        "Endor",
+        25,
+        100,
+        12064,
+    ),  # Plenty of time, plenty of autonomy (but not too much otherwise the test takes a long time)
     ("Tatooine", "Endor", 100, 0, 0),  # No autonomy
     ("Tatooine", "Dantooine", 10, 5, 0),  # No route to destination
     ("Earth", "Tatooine", 10, 5, 0),  # Not a valid source
