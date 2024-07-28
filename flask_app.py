@@ -40,8 +40,8 @@ def get_falcon_success_probability(body: EmpireSchema):
     departure = falcon_config["departure"]
     arrival = falcon_config["arrival"]
 
-    routes = RouteLoader(db_engine).load_all_routes()
-    service = FalconService(autonomy, departure, arrival, routes)
+    all_routes = RouteLoader(db_engine).load_all_routes()
+    service = FalconService(autonomy, departure, arrival, all_routes)
 
     bounty_hunters = [
         (bounty_hunter.planet, bounty_hunter.day)

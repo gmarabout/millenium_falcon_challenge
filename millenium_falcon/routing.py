@@ -5,7 +5,7 @@ This module provides functions to compute all possible trips between two planets
 import logging
 from typing import List
 
-from .domain import Route, Trip
+from .domain import Route, Routes, Trip
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ REFUEL_TIME = 1  # The Falcon can refuel in 1 day
 
 
 def compute_all_trips(
-    origin: str, destination: str, routes: List[Route], max_time: int, autonomy: int
+    origin: str, destination: str, routes: Routes, max_time: int, autonomy: int
 ) -> List[Trip]:
     """
     Compute all paths between origin and destination that fits in max_time, respecting autonomy.
@@ -53,7 +53,7 @@ def compute_all_trips(
 def _explore(
     origin: str,
     destination: str,
-    routes: List[Route],
+    routes: Routes,
     max_time: int,
     current_autonomy: int,
     max_autonomy: int,
@@ -96,8 +96,8 @@ def _explore(
         visited = current_trip.values()
         next_hops = [
             route
-            for route in routes
-            if route.origin == origin and route.destination not in visited
+            for route in routes.next_hops(origin)
+            if route.destination not in visited
         ]
 
         if not next_hops:
@@ -105,12 +105,14 @@ def _explore(
             return
 
         for route in next_hops:
-            arrival_time = current_time + route.travel_time
-            if arrival_time <= max_time and current_autonomy >= route.travel_time:
-                new_autonomy = current_autonomy - route.travel_time
+            route_dest = route.destination
+            route_travel_time = route.travel_time
+            arrival_time = current_time + route_travel_time
+            if arrival_time <= max_time and current_autonomy >= route_travel_time:
+                new_autonomy = current_autonomy - route_travel_time
                 new_trip = current_trip.copy()
                 _explore(
-                    origin=route.destination,
+                    origin=route_dest,
                     destination=destination,
                     routes=routes,
                     max_time=max_time,
@@ -163,7 +165,7 @@ def check_deadline(trip: Trip, deadline: int) -> bool:
     return True
 
 
-def check_distances(trip: Trip, routes: List[Route]) -> bool:
+def check_distances(trip: Trip, routes: Routes) -> bool:
     """Check if the trip respects the given distances."""
     keys = trip.keys()
     if keys:
@@ -176,15 +178,7 @@ def check_distances(trip: Trip, routes: List[Route]) -> bool:
             if location == previous_location:
                 previous_index = i
                 continue
-            route = next(
-                (
-                    route
-                    for route in routes
-                    if route.origin == previous_location
-                    and route.destination == location
-                ),
-                None,
-            )
+            route = routes.find_route(previous_location, location)
             if not route:
                 return False
             if i - previous_index != route.travel_time:

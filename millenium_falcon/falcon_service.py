@@ -5,7 +5,7 @@ This module provides Falcon-related services.
 import logging
 from typing import List, Tuple
 
-from .domain import Trip, Route
+from .domain import Trip, Routes
 from .routing import compute_all_trips
 from .scoring import count_bounty_hunter_days, probability_not_captured
 
@@ -30,12 +30,16 @@ class FalconService:
     """
 
     def __init__(
-        self, autonomy: int, departure: str, arrival: str, all_routes: List[Route]
+        self,
+        autonomy: int,
+        departure: str,
+        arrival: str,
+        all_routes: List[Tuple[str, str, int]],
     ):
         self.autonomy = autonomy
         self.departure = departure
         self.arrival = arrival
-        self.all_routes = all_routes
+        self.routes = Routes(all_routes)
 
     def success_probability(
         self,
@@ -55,7 +59,7 @@ class FalconService:
         """
         # Compute all possible trips
         all_trips = compute_all_trips(
-            self.departure, self.arrival, self.all_routes, countdown, self.autonomy
+            self.departure, self.arrival, self.routes, countdown, self.autonomy
         )
 
         # Find the best trip

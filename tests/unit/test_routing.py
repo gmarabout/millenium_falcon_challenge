@@ -8,55 +8,52 @@ from millenium_falcon.routing import (
     check_deadline,
     check_distances,
 )
-from millenium_falcon.domain import Route
+from millenium_falcon.domain import Routes
 
 
 _ROUTES = [
-    Route("Tatooine", "Dagobah", 6),
-    Route("Dagobah", "Endor", 4),
-    Route("Dagobah", "Hoth", 1),
-    Route("Hoth", "Endor", 1),
-    Route("Tatooine", "Hoth", 6),
-    # Some additional routes:
-    Route("Coruscant", "Alderaan", 4),
-    Route("Tatooine", "Naboo", 3),
-    Route("Naboo", "Bespin", 2),
-    Route("Bespin", "Yavin", 5),
-    Route("Yavin", "Kashyyyk", 4),
-    Route("Kashyyyk", "Corellia", 6),
-    Route("Corellia", "Mustafar", 3),
-    Route("Mustafar", "Kamino", 5),
-    Route("Kamino", "Geonosis", 2),
-    Route("Geonosis", "Jakku", 4),
-    Route("Jakku", "Scarif", 3),
-    Route("Scarif", "Coruscant", 6),
-    Route("Alderaan", "Endor", 3),
-    Route("Endor", "Yavin", 4),
-    Route("Yavin", "Hoth", 2),
-    Route("Hoth", "Naboo", 5),
-    Route("Naboo", "Kamino", 3),
-    Route("Kamino", "Mustafar", 4),
-    Route("Mustafar", "Corellia", 6),
-    Route("Corellia", "Tatooine", 5),
-    Route("Corellia", "Geonosis", 6),
-    Route("Tatooine", "Jakku", 4),
-    Route("Jakku", "Kashyyyk", 6),
-    Route("Kashyyyk", "Geonosis", 4),
-    Route("Geonosis", "Dagobah", 3),
-    Route("Dagobah", "Scarif", 2),
-    Route("Scarif", "Bespin", 6),
-    Route("Bespin", "Alderaan", 3),
-    Route("Alderaan", "Kamino", 4),
-    Route("Kamino", "Coruscant", 3),
-    Route("Dantooine", "Geonosis", 5),
+    ("Tatooine", "Dagobah", 6),
+    ("Dagobah", "Endor", 4),
+    ("Dagobah", "Hoth", 1),
+    ("Hoth", "Endor", 1),
+    ("Tatooine", "Hoth", 6),
+    # Extra routes
+    ("Coruscant", "Alderaan", 4),
+    ("Tatooine", "Naboo", 3),
+    ("Naboo", "Bespin", 2),
+    ("Bespin", "Yavin", 5),
+    ("Yavin", "Kashyyyk", 4),
+    ("Kashyyyk", "Corellia", 6),
+    ("Corellia", "Mustafar", 3),
+    ("Mustafar", "Kamino", 5),
+    ("Kamino", "Geonosis", 2),
+    ("Geonosis", "Jakku", 4),
+    ("Jakku", "Scarif", 3),
+    ("Scarif", "Coruscant", 6),
+    ("Alderaan", "Endor", 3),
+    ("Endor", "Yavin", 4),
+    ("Yavin", "Hoth", 2),
+    ("Hoth", "Naboo", 5),
+    ("Naboo", "Kamino", 3),
+    ("Kamino", "Mustafar", 4),
+    ("Mustafar", "Corellia", 6),
+    ("Corellia", "Tatooine", 5),
+    ("Corellia", "Geonosis", 6),
+    ("Tatooine", "Jakku", 4),
+    ("Jakku", "Kashyyyk", 6),
+    ("Kashyyyk", "Geonosis", 4),
+    ("Geonosis", "Dagobah", 3),
+    ("Dagobah", "Scarif", 2),
+    ("Scarif", "Bespin", 6),
+    ("Bespin", "Alderaan", 3),
+    ("Alderaan", "Kamino", 4),
+    ("Kamino", "Coruscant", 3),
+    ("Dantooine", "Geonosis", 5),
 ]
 
 
-def get_all_routes():
-    # Routes are bidirectional
-    return _ROUTES + [
-        Route(route.destination, route.origin, route.travel_time) for route in _ROUTES
-    ]
+def build_routes():
+    return Routes(_ROUTES)
 
 
 def test_check_autonomy():
@@ -108,19 +105,18 @@ def test_check_deadlines():
 
 
 def test_check_distances():
-    assert check_distances({0: "Tatooine", 6: "Dagobah"}, get_all_routes())
-    assert check_distances({0: "Tatooine", 6: "Dagobah", 7: "Hoth"}, get_all_routes())
+    routes = build_routes()
+    assert check_distances({0: "Tatooine", 6: "Dagobah"}, routes)
+    assert check_distances({0: "Tatooine", 6: "Dagobah", 7: "Hoth"}, routes)
+    assert check_distances({0: "Tatooine", 6: "Dagobah", 7: "Hoth", 8: "Endor"}, routes)
     assert check_distances(
-        {0: "Tatooine", 6: "Dagobah", 7: "Hoth", 8: "Endor"}, get_all_routes()
-    )
-    assert check_distances(
-        {0: "Tatooine", 6: "Hoth", 7: "Hoth", 8: "Hoth", 9: "Endor"}, get_all_routes()
+        {0: "Tatooine", 6: "Hoth", 7: "Hoth", 8: "Hoth", 9: "Endor"}, routes
     )
     assert not check_distances(
-        {0: "Tatooine", 6: "Dagobah", 7: "Endor"}, get_all_routes()
+        {0: "Tatooine", 6: "Dagobah", 7: "Endor"}, routes
     )  # Wrong travel time (Dagobah -> Endor)
     assert not check_distances(
-        {0: "Tatooine", 6: "Dagobah", 7: "Coruscant"}, get_all_routes()
+        {0: "Tatooine", 6: "Dagobah", 7: "Coruscant"}, routes
     )  # Wrong destination (Coruscant)
 
 
@@ -162,7 +158,8 @@ TRIP_TEST_CASES = [
     TRIP_TEST_CASES,
 )
 def test_compute_all_trips(origin, destination, max_time, autonomy, expected):
-    trips = compute_all_trips(origin, destination, get_all_routes(), max_time, autonomy)
+    routes = build_routes()
+    trips = compute_all_trips(origin, destination, routes, max_time, autonomy)
 
     # Check we found the expected number of trips
     assert len(trips) == expected, "Number of trips does not match"
@@ -175,18 +172,19 @@ def test_compute_all_trips(origin, destination, max_time, autonomy, expected):
     for trip in trips:
         assert check_autonomy(trip, autonomy), "Autonomy check failed"
         assert check_deadline(trip, max_time), "Deadline check failed"
-        assert check_distances(trip, get_all_routes()), "Distance check failed"
+        assert check_distances(trip, routes), "Distance check failed"
 
 
 def test_compute_all_trips_errors():
+    routes = build_routes()
     # No routes given
     with pytest.raises(ValueError):
         compute_all_trips("Tatooine", "Endor", [], 10, 6)
 
     # Negative max_time
     with pytest.raises(ValueError):
-        compute_all_trips("Tatooine", "Endor", get_all_routes(), -1, 6)
+        compute_all_trips("Tatooine", "Endor", routes, -1, 6)
 
     # Negative autonomy
     with pytest.raises(ValueError):
-        compute_all_trips("Tatooine", "Endor", get_all_routes(), 10, -1)
+        compute_all_trips("Tatooine", "Endor", routes, 10, -1)

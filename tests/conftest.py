@@ -1,10 +1,9 @@
-from typing import List
+from typing import List, Tuple
 
 import pytest
 from sqlalchemy import Engine, create_engine
 
 from flask_app import app
-from millenium_falcon.domain import Route
 from millenium_falcon.route_loader import RouteLoader
 
 
@@ -20,7 +19,7 @@ def route_loader(db_engine: Engine) -> RouteLoader:
 
 
 @pytest.fixture
-def routes(route_loader: RouteLoader) -> List[Route]:
+def routes(route_loader: RouteLoader) -> List[Tuple[str, str, int]]:
     return route_loader.load_all_routes()
 
 

@@ -104,8 +104,8 @@ Here is a brief overview:
 - `cli.py`: The main file for running the command line interface (CLI) using Click.
 - `config.py`: Contains configuration helpers for the project.
 - `millenium_falcon` : Contains the backend modules
-  - `domain.py`: Contains the domain classes and structures (mainly route and trip)
-  - `route_loader.py`: Contains route loaders, relies on SQLAlchemy.
+  - `domain.py`: Contains the domain classes and structures (mainly routes and trip)
+  - `route_loader.py`: Contains data loaders, relies on SQLAlchemy.
   - `falcon_services.py`: Contains business logic for the Falcon-related services.
   - `routing.py`: Contains the code for finding trip accross planets.
   - `scoring.py`: Contains the code to score trips (basically compute the odds of not being caughts by Bounty Hunters)

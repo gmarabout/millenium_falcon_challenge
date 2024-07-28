@@ -26,11 +26,11 @@ def compute_probability(falcon_file, empire_file, display_trip):
 
     # Load the routes from the database
     route_loader = RouteLoader(db_engine)
-    routes = route_loader.load_all_routes()
+    all_routes = route_loader.load_all_routes()
 
     # Create the FalconService instance
     falcon_service = FalconService(
-        all_routes=routes,
+        all_routes=all_routes,
         autonomy=falcon_data["autonomy"],
         departure=falcon_data["departure"],
         arrival=falcon_data["arrival"],

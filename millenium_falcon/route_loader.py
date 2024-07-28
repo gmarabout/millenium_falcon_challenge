@@ -4,11 +4,10 @@ It uses SQLAlchemy to interact with the database and load the routes.
 """
 
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Tuple
 from sqlalchemy import MetaData, Table
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
-from .domain import Route
 
 
 class RouteLoader:
@@ -20,23 +19,16 @@ class RouteLoader:
         )
         self.session = sessionmaker(bind=engine)()
 
-    def load_all_routes(self) -> List[Route]:
+    def load_all_routes(self) -> List[Tuple[str, str, int]]:
         results = self.session.query(self.route_table).all()
         routes = []
         for row in results:
             routes.append(
-                Route(
+                (
                     row.origin,
                     row.destination,
                     row.travel_time,
                 )
             )
-            # Routes are bidirectional
-            routes.append(
-                Route(
-                    row.destination,
-                    row.origin,
-                    row.travel_time,
-                )
-            )
+
         return routes
